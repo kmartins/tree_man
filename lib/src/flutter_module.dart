@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:tree_man/src/module.dart';
-import 'package:tree_man/src/provider_man.dart';
+import 'package:tree_man/tree_man.dart';
 
 typedef ModuleBuilder = Module Function();
 
@@ -19,11 +19,38 @@ class FlutterModule extends StatefulWidget {
 
   @override
   State<FlutterModule> createState() => _FlutterModuleState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+      ..add(DiagnosticsProperty<ModuleBuilder>('createModule', createModule))
+      ..add(DiagnosticsProperty<WidgetBuilder>('builder', builder))
+      ..add(DiagnosticsProperty<Widget>('loading', loading));
+    super.debugFillProperties(properties);
+  }
 }
 
 class _FlutterModuleState extends State<FlutterModule> {
   late final _module = widget.createModule();
   late final _asyncModule = Deps.waitAsyncModuleIsReady(_module);
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+      ..add(
+        DiagnosticsProperty<bool>(
+          'isModuleReady',
+          Deps.isModuleReady(_module),
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<List<Inject<Object>?>>(
+          'injections',
+          _module.injections,
+        ),
+      );
+    super.debugFillProperties(properties);
+  }
 
   @override
   void initState() {
