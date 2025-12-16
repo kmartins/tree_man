@@ -43,14 +43,14 @@ It`s simple, just three steps:
     MaterialApp(
         home: FlutterModule(
             createModule: MainModule.new,
-            builder: (_) => const Text('Teste'),
+            builder: (_) => const Text('Test'),
         ),
     ),
     ``` 
 
 4. And finally, use it to get the dependencies:
 ```dart
-final controller = Deps.get<YourController>();
+final controller = TreeMan.get<YourController>();
 ```
 
 ### Async Injections
@@ -65,7 +65,7 @@ The `FlutterModule` widget is already in control of this for default and has a _
 MaterialApp(
     home: FlutterModule(
         createModule: AsyncMainModule.new,
-        builder: (_) => const Text('Teste'),
+        builder: (_) => const Text('Test'),
         loading: const Text('loading'),
     ),
 ),
@@ -101,7 +101,7 @@ Deps.overrideInstance<YourRepository>(YourRepositoryMock());
 then
 
 ```dart
-Deps.get<YourRepository>() will return `YourRepositoryMock`.
+TreeMan.get<YourRepository>() will return `YourRepositoryMock`.
 ```
 
 ## 📝 Maintainers

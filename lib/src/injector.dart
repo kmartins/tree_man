@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:tree_man/src/module.dart';
 
-abstract interface class Injector {
+// ignore: one_member_abstracts
+abstract interface class DependencyProvider {
   T get<T extends Object>();
+}
 
+abstract interface class Injector implements DependencyProvider {
   void removeModule(Module module);
 
   void addModule(Module module);

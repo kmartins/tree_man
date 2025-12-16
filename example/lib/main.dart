@@ -48,7 +48,7 @@ class FirstPage extends StatelessWidget {
       body: FlutterModule(
         createModule: MainModule.new,
         builder: (_) => Center(
-          child: Text('First Page - ${Deps.get<MainClass>().name}'),
+          child: Text('First Page - ${TreeMan.get<MainClass>().name}'),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -67,7 +67,7 @@ class SecondPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: Text('Second Page - ${Deps.get<MainClass>().name}'),
+        child: Text('Second Page - ${TreeMan.get<MainClass>().name}'),
       ),
     );
   }

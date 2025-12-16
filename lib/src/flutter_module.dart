@@ -32,7 +32,7 @@ class FlutterModule extends StatefulWidget {
 
 class _FlutterModuleState extends State<FlutterModule> {
   late final _module = widget.createModule();
-  late final _asyncModule = Deps.waitAsyncModuleIsReady(_module);
+  late final _asyncModule = TreeMan.waitAsyncModuleIsReady(_module);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -40,7 +40,7 @@ class _FlutterModuleState extends State<FlutterModule> {
       ..add(
         DiagnosticsProperty<bool>(
           'isModuleReady',
-          Deps.isModuleReady(_module),
+          TreeMan.isModuleReady(_module),
         ),
       )
       ..add(
@@ -55,7 +55,7 @@ class _FlutterModuleState extends State<FlutterModule> {
   @override
   void initState() {
     super.initState();
-    Deps.addModule(_module);
+    TreeMan.addModule(_module);
   }
 
   @override
@@ -63,7 +63,7 @@ class _FlutterModuleState extends State<FlutterModule> {
     return FutureBuilder(
       future: _asyncModule,
       builder: (context, _) {
-        if (Deps.isModuleReady(_module)) {
+        if (TreeMan.isModuleReady(_module)) {
           return widget.builder(context);
         }
         return widget.loading ??
@@ -74,7 +74,7 @@ class _FlutterModuleState extends State<FlutterModule> {
 
   @override
   void dispose() {
-    Deps.removeModule(_module);
+    TreeMan.removeModule(_module);
     super.dispose();
   }
 }

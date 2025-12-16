@@ -4,4 +4,4 @@ library;
 export 'src/flutter_module.dart';
 export 'src/inject.dart';
 export 'src/module.dart';
-export 'src/provider_man.dart';
+export 'src/tree_man.dart';
