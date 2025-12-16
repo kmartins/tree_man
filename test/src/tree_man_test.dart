@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unused_constructor_parameters
-
+// ignore: library_annotations
+@Tags(['skip_very_good_optimization'])
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tree_man/src/exceptions.dart';
