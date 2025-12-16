@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:tree_man/src/exceptions.dart';
 import 'package:tree_man/src/injector.dart';
 
 enum InjectType { factory, singleton, lazySingleton, asyncSingleton }
@@ -32,9 +35,9 @@ enum InjectType { factory, singleton, lazySingleton, asyncSingleton }
 /// final myDependency = myInject.get(myFlutterInjections);
 /// ```
 ///
-typedef AsyncBind<T extends Object> = Future<T> Function(Injector I);
+typedef AsyncBind<T extends Object> = Future<T> Function(DependencyProvider i);
 
-typedef Bind<T extends Object> = T Function(Injector i);
+typedef Bind<T extends Object> = T Function(DependencyProvider i);
 
 typedef Dispose<T extends Object> = void Function(T instance);
 
@@ -75,13 +78,22 @@ class Inject<T extends Object> {
   final AsyncBind<T>? _asyncCall;
   final InjectType type;
   final Type objectType;
+  final completer = Completer<T>();
   final Dispose<T>? _dispose;
   T? instance;
 
-  Future<T?> getAsync(Injector i) async =>
+  Future<void> getAsync(DependencyProvider i) async {
+    try {
       instance ??= await _asyncCall?.call(i);
+      completer.complete(instance);
+    } on UninitializedInstanceException catch (exception) {
+      final depInject = exception.inject;
+      await depInject.completer.future;
+      await getAsync(i);
+    }
+  }
 
-  T? get(Injector i) {
+  T? get(DependencyProvider i) {
     if (type == InjectType.factory) {
       instance = null;
     }
@@ -89,8 +101,8 @@ class Inject<T extends Object> {
   }
 
   void dispose() {
-    if (instance != null) {
-      _dispose?.call(instance!);
+    if (instance case final instance?) {
+      _dispose?.call(instance);
     }
     instance = null;
   }

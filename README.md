@@ -50,7 +50,7 @@ It`s simple, just three steps:
 
 4. And finally, use it to get the dependencies:
 ```dart
-final controller = Deps.get<YourController>();
+final controller = TreeMan.get<YourController>();
 ```
 
 ### Async Injections
@@ -101,7 +101,7 @@ Deps.overrideInstance<YourRepository>(YourRepositoryMock());
 then
 
 ```dart
-Deps.get<YourRepository>() will return `YourRepositoryMock`.
+TreeMan.get<YourRepository>() will return `YourRepositoryMock`.
 ```
 
 ## 📝 Maintainers

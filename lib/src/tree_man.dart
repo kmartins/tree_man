@@ -24,16 +24,18 @@ typedef DependencyInjectorBuilder<T extends Object> = T Function(
 );
 
 // ignore: non_constant_identifier_names
-final Injector Deps = _TreeMan._();
+final Injector TreeMan = _TreeMan._();
 
 class _TreeMan implements Injector {
   _TreeMan._();
 
   final Map<Module, Map<Type, Inject>> _modules = {};
 
-  final Map<Module, Completer<List<Object?>>> _asyncModules = {};
+  final Map<Module, Completer<void>> _asyncModules = {};
 
   final Map<Type, Object> _overrideInstances = {};
+
+  final Set<Type> _allInjections = {};
 
   /// Adds a list of injections to the injection container.
   @override
@@ -55,13 +57,16 @@ class _TreeMan implements Injector {
         asyncSingletonInjects.add(inject);
       }
       injects.addAll({inject.objectType: inject});
+      _allInjections.add(inject.objectType);
     }
-    _modules.addAll({module: injects});
-    _initSingletons(singletonInjects);
     if (asyncSingletonInjects.isNotEmpty) {
-      _asyncModules.addAll({module: Completer<List<Object?>>()});
-      _initAsyncSingletons(module, asyncSingletonInjects);
+      final moduleCompleter = Completer<void>();
+      _asyncModules.addAll({module: moduleCompleter});
+      _initAsyncSingletons(moduleCompleter, asyncSingletonInjects);
     }
+
+    _modules.addAll({module: injects});
+    _initSingletons(module, singletonInjects);
   }
 
   @override
@@ -79,20 +84,26 @@ class _TreeMan implements Injector {
     _modules.remove(module);
   }
 
-  void _initSingletons(List<Inject> singletonInjects) {
+  Future<void> _initSingletons(
+    Module module,
+    List<Inject> singletonInjects,
+  ) async {
+    if (!isModuleReady(module)) {
+      await waitAsyncModuleIsReady(module);
+    }
     for (final inject in singletonInjects) {
       inject.get(this);
     }
   }
 
   Future<void> _initAsyncSingletons(
-    Module module,
+    Completer<void> moduleCompleter,
     List<Inject> asyncSingletonInjects,
   ) async {
     final asyncSingletons =
         asyncSingletonInjects.map((e) => e.getAsync(this)).toList();
-    final result = await Future.wait<Object?>(asyncSingletons);
-    _asyncModules[module]!.complete(result);
+    await Future.wait(asyncSingletons);
+    moduleCompleter.complete();
   }
 
   @override
@@ -105,7 +116,8 @@ class _TreeMan implements Injector {
 
   /// Finds and returns an instance of type [T] from
   /// the list of registered instances.
-  /// Throws an [InjectException] if no instance of type [T] is found.
+  /// Throws an [UnregisteredInstanceException] if no instance
+  /// of type [T] is found.
   T _find<T extends Object>() {
     final instances = _modules.values.toList();
     T? currentInstance;
@@ -118,9 +130,10 @@ class _TreeMan implements Injector {
     }
 
     if (currentInstance == null) {
-      throw InjectException(
-        message: "$T dont'exist or is not ready because "
-            'is asynchronous',
+      throw UnregisteredInstanceException(
+        message: 'No registered dependency found for $T. Please ensure '
+            'the dependency is registered',
+        objectType: T,
       );
     }
 
@@ -131,7 +144,17 @@ class _TreeMan implements Injector {
   B? _getByInjectorInstances<B extends Object>(Map<Type, Inject> instances) {
     final instance = instances[B];
     if (instance != null) {
-      return instance.get(this) as B?;
+      final object = instance.get(this) as B?;
+      if (object == null) {
+        throw UninitializedInstanceException(
+          message: "The instance for '$B' has not been initialized. Call "
+              '`TreeMan.waitAsyncModuleIsReady(module)` before '
+              'attempting to retrieve it.',
+          inject: instance,
+        );
+      }
+
+      return object;
     }
     return null;
   }
@@ -149,7 +172,10 @@ class _TreeMan implements Injector {
   @override
   T get<T extends Object>() {
     final overrideInstance = _getOverrideInstance<T>();
-    if (overrideInstance != null) return overrideInstance;
+    if (overrideInstance != null) {
+      return overrideInstance;
+    }
+
     return _find<T>();
   }
 

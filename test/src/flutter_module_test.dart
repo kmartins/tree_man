@@ -43,7 +43,7 @@ void main() {
       );
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(Deps.get<MainClass>(), isA<MainClass>());
+      expect(TreeMan.get<MainClass>(), isA<MainClass>());
     });
 
     testWidgets(
@@ -63,7 +63,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(Deps.get<MainClass>(), isA<MainClass>());
+      expect(TreeMan.get<MainClass>(), isA<MainClass>());
     });
 
     testWidgets(
@@ -84,7 +84,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('loading'), findsNothing);
-      expect(Deps.get<MainClass>(), isA<MainClass>());
+      expect(TreeMan.get<MainClass>(), isA<MainClass>());
     });
   });
 }
