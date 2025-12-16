@@ -43,7 +43,7 @@ It`s simple, just three steps:
     MaterialApp(
         home: FlutterModule(
             createModule: MainModule.new,
-            builder: (_) => const Text('Teste'),
+            builder: (_) => const Text('Test'),
         ),
     ),
     ``` 
@@ -65,7 +65,7 @@ The `FlutterModule` widget is already in control of this for default and has a _
 MaterialApp(
     home: FlutterModule(
         createModule: AsyncMainModule.new,
-        builder: (_) => const Text('Teste'),
+        builder: (_) => const Text('Test'),
         loading: const Text('loading'),
     ),
 ),
