@@ -190,6 +190,7 @@ void main() {
         () => TreeMan.get<ClassC>(),
         throwsA(isA<UninitializedInstanceException>()),
       );
+      TreeMan.removeModule(asyncModule);
     });
 
     test('throws ModuleException if module already added', () {
