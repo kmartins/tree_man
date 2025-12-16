@@ -3,15 +3,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tree_man/src/exceptions.dart';
-import 'package:tree_man/src/inject.dart';
-import 'package:tree_man/src/module.dart';
 import 'package:tree_man/tree_man.dart';
 
 class DisposeClass {
   VoidCallback? disposeMethod;
 
   void dispose() {
-    print('aquii dispose');
     disposeMethod?.call();
   }
 }
@@ -38,48 +35,41 @@ class ClassD {
 }
 
 class ClassE {
-  ClassE(
-    ClassD d,
-    ClassC c,
-    ClassB b,
-    ClassA a,
-  );
+  ClassE(ClassD d, ClassC c, ClassB b, ClassA a);
 }
 
 class AsyncModule extends Module {
   @override
   List<Inject<Object>> get injections => [
-        Inject<ClassA>.asyncSingleton(
-          (i) async {
-            return Future<ClassA>.delayed(
-              const Duration(milliseconds: 300),
-              ClassA.new,
-            );
-          },
-        ),
-      ];
+    Inject<ClassA>.asyncSingleton((i) async {
+      return Future<ClassA>.delayed(
+        const Duration(milliseconds: 300),
+        ClassA.new,
+      );
+    }),
+  ];
 }
 
 class MainModule extends Module {
   @override
   List<Inject<Object>> get injections => [
-        Inject<DisposeClass>.singleton(
-          (_) => DisposeClass(),
-          dispose: (instance) => instance.dispose(),
-        ),
-        Inject<ClassA>.factory((_) => ClassA()),
-        Inject<ClassB>.factory((i) => ClassB(i.get<ClassA>())),
-        Inject<ClassC>.factory((i) => ClassC(i.get<ClassB>())),
-        Inject<ClassD>.factory((i) => ClassD(i.get<ClassC>())),
-        Inject<ClassE>.factory(
-          (i) => ClassE(
-            i.get<ClassD>(),
-            i.get<ClassC>(),
-            i.get<ClassB>(),
-            i.get<ClassA>(),
-          ),
-        ),
-      ];
+    Inject<DisposeClass>.singleton(
+      (_) => DisposeClass(),
+      dispose: (instance) => instance.dispose(),
+    ),
+    Inject<ClassA>.factory((_) => ClassA()),
+    Inject<ClassB>.factory((i) => ClassB(i.get<ClassA>())),
+    Inject<ClassC>.factory((i) => ClassC(i.get<ClassB>())),
+    Inject<ClassD>.factory((i) => ClassD(i.get<ClassC>())),
+    Inject<ClassE>.factory(
+      (i) => ClassE(
+        i.get<ClassD>(),
+        i.get<ClassC>(),
+        i.get<ClassB>(),
+        i.get<ClassA>(),
+      ),
+    ),
+  ];
 }
 
 void main() {
@@ -159,10 +149,7 @@ void main() {
 
     test('throws ModuleException if module already added', () {
       Deps.addModule(mainModule);
-      expect(
-        () => Deps.addModule(mainModule),
-        throwsA(isA<ModuleException>()),
-      );
+      expect(() => Deps.addModule(mainModule), throwsA(isA<ModuleException>()));
       Deps.removeModule(mainModule);
     });
 
