@@ -9,30 +9,27 @@ class MainClass {
 class MainModule extends Module {
   @override
   List<Inject<Object>> get injections => [
-        Inject<MainClass>.singleton(
-          (_) => MainClass(),
-        ),
-      ];
+    Inject<MainClass>.singleton((_) => MainClass()),
+  ];
 }
 
 class AsyncMainModule extends Module {
   @override
   List<Inject<Object>> get injections => [
-        Inject<MainClass>.asyncSingleton(
-          (i) async {
-            return Future<MainClass>.delayed(
-              const Duration(milliseconds: 300),
-              MainClass.new,
-            );
-          },
-        ),
-      ];
+    Inject<MainClass>.asyncSingleton((i) async {
+      return Future<MainClass>.delayed(
+        const Duration(milliseconds: 300),
+        MainClass.new,
+      );
+    }),
+  ];
 }
 
 void main() {
   group('FlutterModule', () {
-    testWidgets('injected object is available in child widget tree',
-        (WidgetTester tester) async {
+    testWidgets('injected object is available in child widget tree', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: FlutterModule(
@@ -46,8 +43,7 @@ void main() {
       expect(TreeMan.get<MainClass>(), isA<MainClass>());
     });
 
-    testWidgets(
-        'injected async object is available in child '
+    testWidgets('injected async object is available in child '
         'widget tree and show default loading', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -66,8 +62,7 @@ void main() {
       expect(TreeMan.get<MainClass>(), isA<MainClass>());
     });
 
-    testWidgets(
-        'injected async object is available in child '
+    testWidgets('injected async object is available in child '
         'widget tree and show custom loading', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(

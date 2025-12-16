@@ -35,12 +35,7 @@ class ClassD {
 }
 
 class ClassE {
-  ClassE(
-    ClassD d,
-    ClassC c,
-    ClassB b,
-    ClassA a,
-  );
+  ClassE(ClassD d, ClassC c, ClassB b, ClassA a);
 }
 
 class ClassF {
@@ -50,54 +45,48 @@ class ClassF {
 class AsyncModule extends Module {
   @override
   List<Inject<Object>> get injections => [
-        Inject<ClassA>.asyncSingleton(
-          (i) async {
-            return Future<ClassA>.delayed(
-              const Duration(milliseconds: 300),
-              ClassA.new,
-            );
-          },
-        ),
-        Inject<ClassB>.asyncSingleton(
-          (i) async {
-            return Future<ClassB>.delayed(
-              const Duration(milliseconds: 200),
-              () => ClassB(i.get<ClassA>()),
-            );
-          },
-        ),
-        Inject<ClassF>.asyncSingleton(
-          (i) async {
-            return Future<ClassF>.delayed(
-              const Duration(milliseconds: 100),
-              () => ClassF(i.get<ClassA>(), i.get<ClassB>()),
-            );
-          },
-        ),
-        Inject<ClassC>.singleton((i) => ClassC(i.get<ClassB>())),
-      ];
+    Inject<ClassA>.asyncSingleton((i) async {
+      return Future<ClassA>.delayed(
+        const Duration(milliseconds: 300),
+        ClassA.new,
+      );
+    }),
+    Inject<ClassB>.asyncSingleton((i) async {
+      return Future<ClassB>.delayed(
+        const Duration(milliseconds: 200),
+        () => ClassB(i.get<ClassA>()),
+      );
+    }),
+    Inject<ClassF>.asyncSingleton((i) async {
+      return Future<ClassF>.delayed(
+        const Duration(milliseconds: 100),
+        () => ClassF(i.get<ClassA>(), i.get<ClassB>()),
+      );
+    }),
+    Inject<ClassC>.singleton((i) => ClassC(i.get<ClassB>())),
+  ];
 }
 
 class MainModule extends Module {
   @override
   List<Inject<Object>> get injections => [
-        Inject<DisposeClass>.singleton(
-          (_) => DisposeClass(),
-          dispose: (instance) => instance.dispose(),
-        ),
-        Inject<ClassA>.factory((_) => ClassA()),
-        Inject<ClassB>.factory((i) => ClassB(i.get<ClassA>())),
-        Inject<ClassC>.factory((i) => ClassC(i.get<ClassB>())),
-        Inject<ClassD>.factory((i) => ClassD(i.get<ClassC>())),
-        Inject<ClassE>.factory(
-          (i) => ClassE(
-            i.get<ClassD>(),
-            i.get<ClassC>(),
-            i.get<ClassB>(),
-            i.get<ClassA>(),
-          ),
-        ),
-      ];
+    Inject<DisposeClass>.singleton(
+      (_) => DisposeClass(),
+      dispose: (instance) => instance.dispose(),
+    ),
+    Inject<ClassA>.factory((_) => ClassA()),
+    Inject<ClassB>.factory((i) => ClassB(i.get<ClassA>())),
+    Inject<ClassC>.factory((i) => ClassC(i.get<ClassB>())),
+    Inject<ClassD>.factory((i) => ClassD(i.get<ClassC>())),
+    Inject<ClassE>.factory(
+      (i) => ClassE(
+        i.get<ClassD>(),
+        i.get<ClassC>(),
+        i.get<ClassB>(),
+        i.get<ClassA>(),
+      ),
+    ),
+  ];
 }
 
 void main() {
@@ -164,21 +153,22 @@ void main() {
       TreeMan.removeModule(mainModule);
     });
 
-    test('should wait for all singleton asynchronous dependencies to be ready',
-        () async {
-      TreeMan.addModule(asyncModule);
-      await TreeMan.waitAsyncModuleIsReady(asyncModule);
-
-      expect(TreeMan.get<ClassA>(), isA<ClassA>());
-      expect(TreeMan.get<ClassB>(), isA<ClassB>());
-      expect(TreeMan.get<ClassF>(), isA<ClassF>());
-      expect(TreeMan.get<ClassC>(), isA<ClassC>());
-
-      TreeMan.removeModule(asyncModule);
-    });
-
     test(
-        'module is not ready when there are singleton '
+      'should wait for all singleton asynchronous dependencies to be ready',
+      () async {
+        TreeMan.addModule(asyncModule);
+        await TreeMan.waitAsyncModuleIsReady(asyncModule);
+
+        expect(TreeMan.get<ClassA>(), isA<ClassA>());
+        expect(TreeMan.get<ClassB>(), isA<ClassB>());
+        expect(TreeMan.get<ClassF>(), isA<ClassF>());
+        expect(TreeMan.get<ClassC>(), isA<ClassC>());
+
+        TreeMan.removeModule(asyncModule);
+      },
+    );
+
+    test('module is not ready when there are singleton '
         'asynchronous dependencies', () {
       TreeMan.addModule(asyncModule);
       expect(TreeMan.isModuleReady(asyncModule), isFalse);
@@ -189,8 +179,7 @@ void main() {
       TreeMan.removeModule(mainModule);
     });
 
-    test(
-        'throw a UninitializedInstanceException when an asynchronous '
+    test('throw a UninitializedInstanceException when an asynchronous '
         'dependency has not yet been initialized.', () async {
       TreeMan.addModule(asyncModule);
       expect(

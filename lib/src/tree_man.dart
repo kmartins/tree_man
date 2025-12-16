@@ -19,9 +19,8 @@ extension IterableModifier<E> on Iterable<E> {
       cast<E?>().lastWhere((v) => v != null && test(v), orElse: () => null);
 }
 
-typedef DependencyInjectorBuilder<T extends Object> = T Function(
-  D Function<D extends Object>() getIt,
-);
+typedef DependencyInjectorBuilder<T extends Object> =
+    T Function(D Function<D extends Object>() getIt);
 
 // ignore: non_constant_identifier_names
 final Injector TreeMan = _TreeMan._();
@@ -100,8 +99,9 @@ class _TreeMan implements Injector {
     Completer<void> moduleCompleter,
     List<Inject> asyncSingletonInjects,
   ) async {
-    final asyncSingletons =
-        asyncSingletonInjects.map((e) => e.getAsync(this)).toList();
+    final asyncSingletons = asyncSingletonInjects
+        .map((e) => e.getAsync(this))
+        .toList();
     await Future.wait(asyncSingletons);
     moduleCompleter.complete();
   }
@@ -131,7 +131,8 @@ class _TreeMan implements Injector {
 
     if (currentInstance == null) {
       throw UnregisteredInstanceException(
-        message: 'No registered dependency found for $T. Please ensure '
+        message:
+            'No registered dependency found for $T. Please ensure '
             'the dependency is registered',
         objectType: T,
       );
@@ -147,7 +148,8 @@ class _TreeMan implements Injector {
       final object = instance.get(this) as B?;
       if (object == null) {
         throw UninitializedInstanceException(
-          message: "The instance for '$B' has not been initialized. Call "
+          message:
+              "The instance for '$B' has not been initialized. Call "
               '`TreeMan.waitAsyncModuleIsReady(module)` before '
               'attempting to retrieve it.',
           inject: instance,

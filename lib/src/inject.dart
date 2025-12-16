@@ -43,35 +43,23 @@ typedef Dispose<T extends Object> = void Function(T instance);
 
 class Inject<T extends Object> {
   Inject._syncCall(this._syncCall, this.type, this._dispose)
-      : objectType = T,
-        _asyncCall = null;
+    : objectType = T,
+      _asyncCall = null;
 
   Inject._asyncCall(this._asyncCall, this.type, this._dispose)
-      : objectType = T,
-        _syncCall = null;
+    : objectType = T,
+      _syncCall = null;
 
-  factory Inject.lazySingleton(
-    Bind<T> call, {
-    Dispose<T>? dispose,
-  }) =>
+  factory Inject.lazySingleton(Bind<T> call, {Dispose<T>? dispose}) =>
       Inject._syncCall(call, InjectType.lazySingleton, dispose);
 
-  factory Inject.singleton(
-    Bind<T> call, {
-    Dispose<T>? dispose,
-  }) =>
+  factory Inject.singleton(Bind<T> call, {Dispose<T>? dispose}) =>
       Inject._syncCall(call, InjectType.singleton, dispose);
 
-  factory Inject.factory(
-    Bind<T> call, {
-    Dispose<T>? dispose,
-  }) =>
+  factory Inject.factory(Bind<T> call, {Dispose<T>? dispose}) =>
       Inject._syncCall(call, InjectType.factory, dispose);
 
-  factory Inject.asyncSingleton(
-    AsyncBind<T> call, {
-    Dispose<T>? dispose,
-  }) =>
+  factory Inject.asyncSingleton(AsyncBind<T> call, {Dispose<T>? dispose}) =>
       Inject._asyncCall(call, InjectType.asyncSingleton, dispose);
 
   final Bind<T>? _syncCall;

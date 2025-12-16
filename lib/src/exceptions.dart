@@ -18,9 +18,7 @@ class UnregisteredInstanceException implements Exception {
 }
 
 class ModuleException implements Exception {
-  const ModuleException({
-    required this.message,
-  });
+  const ModuleException({required this.message});
 
   final String message;
 
