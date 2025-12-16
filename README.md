@@ -38,13 +38,12 @@ It`s simple, just three steps:
         ];
     }
    ```
-3. Create your __DepsModule__ and pass the `module`
+3. Create your __DepsModule__ and pass the `module`(Sync Module) 
     ```dart
     MaterialApp(
         home: FlutterModule(
             createModule: MainModule.new,
             builder: (_) => const Text('Teste'),
-            loading: const Text('loading'),
         ),
     ),
     ``` 
@@ -71,6 +70,8 @@ MaterialApp(
     ),
 ),
 ````
+
+> If all injections are sync, the loading will not appear.
 
 ## Dispose
 

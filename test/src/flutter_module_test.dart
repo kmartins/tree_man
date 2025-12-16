@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tree_man/src/inject.dart';
-import 'package:tree_man/src/module.dart';
 import 'package:tree_man/tree_man.dart';
 
 class MainClass {
